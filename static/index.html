@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>График зрителей Twitch</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>Количество зрителей Twitch</h2>
+    <canvas id="twitchChart"></canvas>
+
+    <script>
+        async function fetchData() {
+            try {
+                const response = await fetch("http://localhost:8000/viewers"); // Запрос к API
+                const data = await response.json();
+
+                // Преобразование данных
+                const labels = data.map(item => item.date);
+                const viewers = data.map(item => item.total_viewers);
+
+                // Отрисовка графика
+                const ctx = document.getElementById("twitchChart").getContext("2d");
+                new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: "Зрители",
+                            data: viewers,
+                            borderColor: "blue",
+                            borderWidth: 2,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                ticks: {
+                                    autoSkip: true,
+                                    maxTicksLimit: 10
+                                }
+                            },
+                            y: {
+                                beginAtZero: false
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error("Ошибка загрузки данных:", error);
+            }
+        }
+
+        fetchData();
+    </script>
+</body>
+</html>
