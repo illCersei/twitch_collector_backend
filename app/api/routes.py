@@ -7,27 +7,17 @@ from app.bd.models import Viewer, Game
 from typing import List
 from pydantic import BaseModel
 
-from fastapi_cache.decorator import cache # GPT!  
-from fastapi_cache import FastAPICache #gpt
-from fastapi_cache.backends.redis import RedisBackend #gpt
-from redis import asyncio as aioredis #gpt
+from fastapi_cache.decorator import cache
 
 router = APIRouter()
-
-@router.on_event("startup")
-async def startup():
-    """GPT"""
-    redis = aioredis.from_url("redis://localhost", encoding="utf8", decode_responses=True)
-    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
-
 
 class ViewerResponse(BaseModel):
     total_viewers: int
     date: str
 
 class GamesResponse(BaseModel):
-    game_id:int
-    game_name:str
+    game_id: int
+    game_name: str
 
 @router.get("/games", response_model=List[GamesResponse])
 async def get_games(db: AsyncSession = Depends(get_db)):
@@ -40,7 +30,7 @@ async def get_games(db: AsyncSession = Depends(get_db)):
     return result.mappings().all()
 
 @router.get("/viewers", response_model=List[ViewerResponse])
-@cache(expire=300)  # 300 секунд = 5 минут GPT!!
+@cache(expire=300)  # Кеширование на 5 минут
 async def get_viewers(db: AsyncSession = Depends(get_db)):
     result = await db.execute(
         select(
