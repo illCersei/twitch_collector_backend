@@ -19,7 +19,7 @@ class GamesResponse(BaseModel):
     game_id: int
     game_name: str
 
-@router.get("/games", response_model=List[GamesResponse])
+@router.get("/api/games", response_model=List[GamesResponse])
 async def get_games(db: AsyncSession = Depends(get_db)):
     result = await db.execute(
         select(
@@ -29,7 +29,7 @@ async def get_games(db: AsyncSession = Depends(get_db)):
     )
     return result.mappings().all()
 
-@router.get("/viewers", response_model=List[ViewerResponse])
+@router.get("/api/viewers", response_model=List[ViewerResponse])
 @cache(expire=300)  # Кеширование на 5 минут
 async def get_viewers(db: AsyncSession = Depends(get_db)):
     result = await db.execute(
